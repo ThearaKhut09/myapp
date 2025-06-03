@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Education API - Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+        
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+        }
+        
+        .card h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.4rem;
+        }
+        
+        .endpoint {
+            background: #f8f9ff;
+            border: 1px solid #e1e7ff;
+            border-radius: 8px;
+            padding: 12px;
+            margin: 10px 0;
+            font-family: 'Courier New', monospace;
+            position: relative;
+        }
+        
+        .endpoint .method {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        
+        .get { background: #28a745; color: white; }
+        .post { background: #007bff; color: white; }
+        .put { background: #ffc107; color: black; }
+        .delete { background: #dc3545; color: white; }
+        
+        .test-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            margin-top: 10px;
+            transition: background 0.3s ease;
+        }
+        
+        .test-btn:hover {
+            background: #5a6fd8;
+        }
+        
+        .result {
+            margin-top: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            border-left: 4px solid #667eea;
+            display: none;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-left: 10px;
+        }
+        
+        .status-online { background: #28a745; }
+        .status-offline { background: #dc3545; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎓 Education API Dashboard</h1>
+            <p>Laravel-based RESTful API for Educational Management</p>
+        </div>
+        
+        <div class="dashboard">
+            <div class="card">
+                <h3>📚 Courses <span id="courses-status" class="status-indicator status-offline"></span></h3>
+                <div class="endpoint">
+                    <span class="method get">GET</span>
+                    <span>/api/courses</span>
+                    <button class="test-btn" onclick="testEndpoint('/api/courses', 'courses')">Test</button>
+                </div>
+                <div class="endpoint">
+                    <span class="method get">GET</span>
+                    <span>/api/courses/{id}</span>
+                    <button class="test-btn" onclick="testEndpoint('/api/courses/1', 'courses')">Test</button>
+                </div>
+                <div class="endpoint">
+                    <span class="method post">POST</span>
+                    <span>/api/courses</span>
+                    <button class="test-btn" onclick="testPostEndpoint('/api/courses', 'courses')">Test</button>
+                </div>
+                <div id="courses-result" class="result"></div>
+            </div>
+            
+            <div class="card">
+                <h3>🏫 Institutions <span id="institutions-status" class="status-indicator status-offline"></span></h3>
+                <div class="endpoint">
+                    <span class="method get">GET</span>
+                    <span>/api/institutions</span>
+                    <button class="test-btn" onclick="testEndpoint('/api/institutions', 'institutions')">Test</button>
+                </div>
+                <div class="endpoint">
+                    <span class="method get">GET</span>
+                    <span>/api/institutions/{id}</span>
+                    <button class="test-btn" onclick="testEndpoint('/api/institutions/1', 'institutions')">Test</button>
+                </div>
+                <div class="endpoint">
+                    <span class="method post">POST</span>
+                    <span>/api/institutions</span>
+                    <button class="test-btn" onclick="testPostEndpoint('/api/institutions', 'institutions')">Test</button>
+                </div>
+                <div id="institutions-result" class="result"></div>
+            </div>
+            
+            <div class="card">
+                <h3>👨‍🎓 Students <span id="students-status" class="status-indicator status-offline"></span></h3>
+                <div class="endpoint">
+                    <span class="method get">GET</span>
+                    <span>/api/students</span>
+                    <button class="test-btn" onclick="testEndpoint('/api/students', 'students')">Test</button>
+                </div>
+                <div class="endpoint">
+                    <span class="method get">GET</span>
+                    <span>/api/students/{id}</span>
+                    <button class="test-btn" onclick="testEndpoint('/api/students/1', 'students')">Test</button>
+                </div>
+                <div class="endpoint">
+                    <span class="method post">POST</span>
+                    <span>/api/students</span>
+                    <button class="test-btn" onclick="testPostEndpoint('/api/students', 'students')">Test</button>
+                </div>
+                <div id="students-result" class="result"></div>
+            </div>
+            
+            <div class="card">
+                <h3>👨‍🏫 Instructors <span id="instructors-status" class="status-indicator status-offline"></span></h3>
+                <div class="endpoint">
+                    <span class="method get">GET</span>
+                    <span>/api/instructors</span>
+                    <button class="test-btn" onclick="testEndpoint('/api/instructors', 'instructors')">Test</button>
+                </div>
+                <div class="endpoint">
+                    <span class="method get">GET</span>
+                    <span>/api/instructors/{id}</span>
+                    <button class="test-btn" onclick="testEndpoint('/api/instructors/1', 'instructors')">Test</button>
+                </div>
+                <div class="endpoint">
+                    <span class="method post">POST</span>
+                    <span>/api/instructors</span>
+                    <button class="test-btn" onclick="testPostEndpoint('/api/instructors', 'instructors')">Test</button>
+                </div>
+                <div id="instructors-result" class="result"></div>
+            </div>
+            
+            <div class="card">
+                <h3>📝 Enrollments <span id="enrollments-status" class="status-indicator status-offline"></span></h3>
+                <div class="endpoint">
+                    <span class="method get">GET</span>
+                    <span>/api/enrollments</span>
+                    <button class="test-btn" onclick="testEndpoint('/api/enrollments', 'enrollments')">Test</button>
+                </div>
+                <div class="endpoint">
+                    <span class="method get">GET</span>
+                    <span>/api/enrollments/{id}</span>
+                    <button class="test-btn" onclick="testEndpoint('/api/enrollments/1', 'enrollments')">Test</button>
+                </div>
+                <div class="endpoint">
+                    <span class="method post">POST</span>
+                    <span>/api/enrollments</span>
+                    <button class="test-btn" onclick="testPostEndpoint('/api/enrollments', 'enrollments')">Test</button>
+                </div>
+                <div id="enrollments-result" class="result"></div>
+            </div>
+            
+            <div class="card">
+                <h3>🔧 API Status</h3>
+                <div class="endpoint">
+                    <span class="method get">GET</span>
+                    <span>/api/test</span>
+                    <button class="test-btn" onclick="testEndpoint('/api/test', 'status')">Test Connection</button>
+                </div>
+                <div id="status-result" class="result"></div>
+            </div>
+        </div>
+    </div>    <script>
+        // Use current window location for API calls
+        const API_BASE = window.location.origin;
+        
+        // Test individual endpoints
+        async function testEndpoint(endpoint, type) {
+            const resultDiv = document.getElementById(type + '-result');
+            const statusIndicator = document.getElementById(type + '-status');
+            
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = '<p>🔄 Testing endpoint...</p>';
+              try {
+                const response = await fetch(API_BASE + endpoint);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    statusIndicator.className = 'status-indicator status-online';
+                    resultDiv.innerHTML = `
+                        <p><strong>✅ Success (${response.status})</strong></p>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `;
+                } else {
+                    statusIndicator.className = 'status-indicator status-offline';
+                    resultDiv.innerHTML = `
+                        <p><strong>❌ Error (${response.status})</strong></p>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `;
+                }
+            } catch (error) {
+                statusIndicator.className = 'status-indicator status-offline';
+                resultDiv.innerHTML = `
+                    <p><strong>❌ Network Error</strong></p>
+                    <p>${error.message}</p>
+                `;
+            }
+        }
+        
+        // Test POST endpoints with sample data
+        async function testPostEndpoint(endpoint, type) {
+            const resultDiv = document.getElementById(type + '-result');
+            const statusIndicator = document.getElementById(type + '-status');
+            
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = '<p>🔄 Testing POST endpoint...</p>';
+            
+            // Sample data for different types
+            const sampleData = {
+                courses: {
+                    name: "Test Course",
+                    description: "A test course created via API",
+                    credits: 3,
+                    instructor_id: 1,
+                    institution_id: 1
+                },
+                institutions: {
+                    name: "Test University",
+                    address: "123 Test Street",
+                    phone: "555-0123",
+                    email: "test@university.edu"
+                },
+                students: {
+                    name: "John Doe",
+                    email: "john.doe@test.com",
+                    phone: "555-0124",
+                    institution_id: 1
+                },
+                instructors: {
+                    name: "Dr. Jane Smith",
+                    email: "jane.smith@test.com",
+                    phone: "555-0125",
+                    department: "Computer Science",
+                    institution_id: 1
+                },
+                enrollments: {
+                    student_id: 1,
+                    course_id: 1,
+                    enrollment_date: "2024-01-15",
+                    status: "active"
+                }
+            };
+              try {
+                const response = await fetch(API_BASE + endpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(sampleData[type])
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    statusIndicator.className = 'status-indicator status-online';
+                    resultDiv.innerHTML = `
+                        <p><strong>✅ POST Success (${response.status})</strong></p>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `;
+                } else {
+                    statusIndicator.className = 'status-indicator status-offline';
+                    resultDiv.innerHTML = `
+                        <p><strong>❌ POST Error (${response.status})</strong></p>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `;
+                }
+            } catch (error) {
+                statusIndicator.className = 'status-indicator status-offline';
+                resultDiv.innerHTML = `
+                    <p><strong>❌ Network Error</strong></p>
+                    <p>${error.message}</p>
+                `;
+            }
+        }
+          // Auto-test API connection on page load
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                testEndpoint('/api/test', 'status');
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
