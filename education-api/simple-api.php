@@ -336,6 +336,22 @@ switch (true) {
                 'created_at' => date('Y-m-d H:i:s')
             ]
         ], 201);
+        break;    // Root route - redirect to dashboard
+    case $path === '/' && $requestMethod === 'GET':
+        header('Location: /dashboard.html');
+        exit();
+        break;
+
+    // Dashboard route
+    case $path === '/dashboard.html' && $requestMethod === 'GET':
+        $dashboardPath = __DIR__ . '/public/dashboard.html';
+        if (file_exists($dashboardPath)) {
+            header('Content-Type: text/html');
+            readfile($dashboardPath);
+            exit();
+        } else {
+            sendJsonResponse(['status' => 'error', 'message' => 'Dashboard not found'], 404);
+        }
         break;
 
     // Default - route not found
@@ -346,6 +362,8 @@ switch (true) {
             'path' => $path,
             'method' => $requestMethod,
             'available_endpoints' => [
+                'GET /',
+                'GET /dashboard.html',
                 'GET /api/test',
                 'GET /api/institutions',
                 'GET /api/courses',
